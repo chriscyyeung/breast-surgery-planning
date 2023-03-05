@@ -1,4 +1,4 @@
-;Domain specification of breast cancer surgery.
+; Domain specification of breast cancer surgery.
 
 (define (domain breast-surgery)
 
@@ -10,7 +10,7 @@
     )
 
     (:types
-        holdable tumor reims - object
+        holdable tumor axis reims - object
         cautery needle ultrasound gripper - holdable
     )
 
@@ -21,12 +21,12 @@
         (gripper-free)
         (cautery-on)
         (cautery-off)
+        (cautery-calibrated)
         (needle-inserted)
-        (needle-removed)
-        (tumor-attached)
         (tumor-excised)
-        (tumor-in)
         (tumor-removed)
+        (adjacent ?x1 ?y1 ?z1 ?x2 ?y2 ?z2 - axis)
+        (tumor-at ?x ?y ?z - axis)
     )
 
     (:action drop
@@ -49,11 +49,10 @@
     (:action insert-needle
         :parameters (?n - needle ?g - gripper)
         :precondition (and (tool-active ?n)
-                           (needle-removed)
-                           (tumor-attached)
-                           (tumor-in))
+                           (not (needle-inserted))
+                           (not (tumor-excised))
+                           (not (tumor-removed)))
         :effect (and (not (tool-active ?n))
-                     (not (needle-removed))
                      (not (holding ?n))
                      (tool-active ?g)
                      (needle-inserted))
@@ -65,12 +64,18 @@
                            (gripper-free)
                            (needle-inserted)
                            (tumor-excised)
-                           (tumor-in))
+                           (not (tumor-removed)))
         :effect (and (not (needle-inserted))          
-                     (not (gripper-free))
-                     (needle-removed)  
+                     (not (gripper-free)) 
                      (gripping ?n))
     )
+
+    (:action calibrate-cautery
+        :parameters (?c - cautery)
+        :precondition (and (tool-active ?c))
+        :effect (and (cautery-calibrated))
+    )
+    
     
     (:action power-cautery
         :parameters (?c - cautery)
@@ -87,22 +92,21 @@
     (:action cut
         :parameters (?c - cautery)
         :precondition (and (tool-active ?c)
+                           (cautery-calibrated)
                            (cautery-on)
                            (needle-inserted)
-                           (tumor-attached))
-        :effect (and (not (tumor-attached))
-                     (tumor-excised))
+                           (not (tumor-excised)))
+        :effect (and (tumor-excised))
     )
     
     (:action remove-tumor
         :parameters (?g - gripper ?t - tumor)
         :precondition (and (tool-active ?g)
                            (gripper-free)
-                           (needle-removed)
                            (tumor-excised)
-                           (tumor-in))
+                           (not (needle-inserted))
+                           (not (tumor-removed)))
         :effect (and (not (gripper-free))
-                     (not (tumor-in))
                      (tumor-removed)
                      (gripping ?t))
     )
