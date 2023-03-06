@@ -7,10 +7,11 @@
         :typing 
         :adl
         :negative-preconditions
+        :non-deterministic
     )
 
     (:types
-        holdable tumor axis reims - object
+        holdable reims tumor x y z - object
         cautery needle ultrasound gripper - holdable
     )
 

@@ -3,9 +3,9 @@
     (:domain breast-surgery)
 
     (:objects
-        x1 x2 x3 x4 x5 - axis
-        y1 y2 y3 y4 y5 - axis
-        z1 z2 z3 z4 z5 - axis
+        x1 x2 x3 x4 x5 - x
+        y1 y2 y3 y4 y5 - y
+        z1 z2 z3 z4 z5 - z
         t - tumor
         c - cautery
         n - needle
